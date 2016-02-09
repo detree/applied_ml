@@ -113,7 +113,7 @@ test_data<-scale(test_data)
 test_predict<-t(t(test_data)*result_a)
 test_predict<-rowSums(test_predict) + result_b
 test_predict<-test_predict > 0
-test_answer <- test_result == " >50K."
+test_answer <- test_result == " >50K"
 accuracy <- test_predict == test_answer
 accuracy <- sum(accuracy)/length(accuracy)
 accuracy
