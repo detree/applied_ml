@@ -55,15 +55,15 @@ for(i in 0:-3){
 
       predict <- predict >= 1
       if(predict){
-        delta_a <- lambda * main_a
-        delta_b <- 0
+        grad_a <- lambda * main_a
+        grad_b <- 0
       }
       else{
-        delta_a <- lambda * main_a -  number * select_data
-        delta_b <- -number
+        grad_a <- lambda * main_a -  number * select_data
+        grad_b <- -number
       }
-      main_a <- main_a - delta_a * step_len
-      main_b <- main_b - delta_b * step_len
+      main_a <- main_a - grad_a * step_len
+      main_b <- main_b - grad_b * step_len
       
       
       #-------------------------------drawing graph data----------------------------
@@ -116,14 +116,6 @@ test_predict<-test_predict > 0
 test_answer <- test_result == " >50K"
 accuracy <- test_predict == test_answer
 accuracy <- sum(accuracy)/length(accuracy)
-accuracy
-
-
-#-----------------------graph for weight of a at end of each epoch--------------------------------
-#plot(1:length(weight_a[1,]),weight_a[1,],type = "l", xlab="number of steps / 30", ylab="accuracy",ylim=c(0,3))
-#lines(1:length(weight_a[2,]),weight_a[2,],type = "l",col="red")
-#lines(1:length(weight_a[3,]),weight_a[3,],type = "l",col="green")
-#lines(1:length(weight_a[4,]),weight_a[4,],type = "l",col="blue")
 
 #----------------------graph for accuracy of the model------------------------------------
 plot(1:length(graph[1,]),graph[1,],type = "l", xlab="number of steps / 30", ylab="accuracy",ylim=c(0,1))
@@ -133,4 +125,7 @@ lines(1:length(graph[4,]),graph[4,],type = "l",col="blue")
 
 legend(380, 0.2, legend=c("λ=0.001", "λ=0.01", "λ=0.1", "λ=1" ),
        col=c("black","red", "green", "blue"), lty=1:1, cex=0.8)
+
+accuracy
 #------------------------end of the program------------------------------
+
