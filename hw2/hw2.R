@@ -11,6 +11,7 @@ step <- 300
 train_accuracy <- 0
 graph_size = 50 * 300 / 30
 graph <- matrix(data=NA,nrow=4,ncol=graph_size)
+weight_a<-matrix(data=NA,nrow=4,ncol=epoch)
 #--------------------end------------------------------------
 
 #-------------------initialize data----------------------
@@ -96,7 +97,9 @@ for(i in 0:-3){
       train_accuracy <- val_accuracy
       result_a <- main_a
       result_b <- main_b
+      result_lamda <- i
     }
+    weight_a[i+4,j]<- sqrt(sum(main_a^2))
   }#end of 50 epoches
 }#end of 10^i
 
@@ -114,13 +117,19 @@ test_answer <- test_result == " >50K."
 accuracy <- test_predict == test_answer
 accuracy <- sum(accuracy)/length(accuracy)
 accuracy
-#-----------------------------------------------------------------------
 
-#----------------------drawing graph------------------------------------
+
+#-----------------------graph for weight of a at end of each epoch--------------------------------
+#plot(1:length(weight_a[1,]),weight_a[1,],type = "l", xlab="number of steps / 30", ylab="accuracy",ylim=c(0,3))
+#lines(1:length(weight_a[2,]),weight_a[2,],type = "l",col="red")
+#lines(1:length(weight_a[3,]),weight_a[3,],type = "l",col="green")
+#lines(1:length(weight_a[4,]),weight_a[4,],type = "l",col="blue")
+
+#----------------------graph for accuracy of the model------------------------------------
 plot(1:length(graph[1,]),graph[1,],type = "l", xlab="number of steps / 30", ylab="accuracy",ylim=c(0,1))
 lines(1:length(graph[2,]),graph[2,],type = "l",col="red")
 lines(1:length(graph[3,]),graph[3,],type = "l",col="green")
-lines(1:length(graph[4,]),graph[4,],type = "l",col="gray")
+lines(1:length(graph[4,]),graph[4,],type = "l",col="blue")
 
 legend(380, 0.2, legend=c("λ=0.001", "λ=0.01", "λ=0.1", "λ=1" ),
        col=c("black","red", "green", "blue"), lty=1:1, cex=0.8)
