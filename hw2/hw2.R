@@ -1,4 +1,4 @@
-setwd("/Users/Lunan/Documents/CS498/HW2")
+setwd("~/Documents/cs498_ml/hw2")
 rm(list=ls())
 library(klaR)
 library(caret)
@@ -8,8 +8,6 @@ a <- 0.05
 b <- 100
 epoch <- 50
 step <- 300
-main_a<-runif(6, -2, 2)
-main_b<-runif(1, -2, 2)
 answer <- c(TRUE, FALSE)
 number <- c(1, -1)
 train_accuracy <- 0
@@ -17,7 +15,7 @@ graph_size = 50 * 300 / 30
 graph <- matrix(data=NA,nrow=4,ncol=graph_size)
 #--------------------end------------------------------------
 
-whole_file <- read.csv('data.txt', header = FALSE)
+whole_file <- read.csv('adult.data', header = FALSE)
 whole_data <- whole_file[, c(1, 3, 5, 11, 12, 13)]
 whole_result <- whole_file[, 15]
 
@@ -47,6 +45,8 @@ valid_result <- cont_result[-train_ind]
 #print(train_data[,1])
 for(i in 0:-3){
   lambda = 10^i
+  main_a<-runif(6, -2, 2)
+  main_b<-runif(1, -2, 2)
   #print(lambda)
   for(j in 1:epoch){
     step_len <- 1/(a*j+b)
@@ -92,7 +92,7 @@ for(i in 0:-3){
         graph_accuracy <- graph_predict == graph_answer
         graph_accuracy <- sum(graph_accuracy)/length(graph_accuracy)
         
-        graph[lambda,(300 * (i - 1) + k)/30] <- graph_accuracy
+        graph[4+i,(300 * (j - 1) + k)/30] <- graph_accuracy
       }
       #------------------------------end------------------------------------------------
     }#end of 300 steps
@@ -125,8 +125,11 @@ accuracy
 #-----------------------------------------------------------------------
 
 #----------------------drawing graph------------------------------------
-plot(1:length(graph[1,]),graph[1,],type = "l",	ylab="accuracy",ylim=c(0,1))
+plot(1:length(graph[1,]),graph[1,],type = "l", xlab="number of steps / 30", ylab="accuracy",ylim=c(0,1))
 lines(1:length(graph[2,]),graph[2,],type = "l",col="red")
 lines(1:length(graph[3,]),graph[3,],type = "l",col="green")
 lines(1:length(graph[4,]),graph[4,],type = "l",col="gray")
+
+legend(380, 0.2, legend=c("λ=0.001", "λ=0.01", "λ=0.1", "λ=1" ),
+       col=c("black","red", "green", "blue"), lty=1:1, cex=0.8)
 #------------------------end of the program------------------------------
