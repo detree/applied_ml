@@ -8,41 +8,28 @@ a <- 0.05
 b <- 100
 epoch <- 50
 step <- 300
-answer <- c(TRUE, FALSE)
-number <- c(1, -1)
 train_accuracy <- 0
 graph_size = 50 * 300 / 30
 graph <- matrix(data=NA,nrow=4,ncol=graph_size)
 #--------------------end------------------------------------
 
+#-------------------initialize data----------------------
 whole_file <- read.csv('adult.data', header = FALSE)
-whole_data <- whole_file[, c(1, 3, 5, 11, 12, 13)]
-whole_result <- whole_file[, 15]
+cont_data <- whole_file[, c(1, 3, 5, 11, 12, 13)]
+cont_result <- whole_file[, 15]
 
-file_idx<-createDataPartition(y = whole_result,p = 0.9,list =FALSE)
-cont_data <- whole_data[file_idx, ]
-cont_result <- whole_result[file_idx]
-
-test_data <- whole_data[-file_idx, ]
-test_result <- whole_result[-file_idx]
-test_data<-scale(test_data)
-
-#-------------------normal distribution----------------------
-cont_mean <- sapply(cont_data,mean)
-cont_sd <- sapply(cont_data,sd)
-cont_offset <- t(t(cont_data)-cont_mean)
-cont_data<-t(t(cont_offset)/cont_sd)
-#----------------------end------------------------------------
+#normalization of the data
+cont_data<-scale(cont_data)
 
 # separate trainning and validation data
-train_ind <- createDataPartition(y = cont_result,p = 0.8/0.9,list =FALSE)
+train_ind <- createDataPartition(y = cont_result,p = 0.9,list =FALSE)
 train_data <- cont_data[train_ind,]
 train_result <- cont_result[train_ind]
 
 valid_data <- cont_data[-train_ind,]
 valid_result <- cont_result[-train_ind]
+#----------------------end------------------------------------
 
-#print(train_data[,1])
 for(i in 0:-3){
   lambda = 10^i
   main_a<-runif(6, -2, 2)
@@ -61,10 +48,9 @@ for(i in 0:-3){
     for(k in 1:step){
       select_idx <- sample(1:length(train_data[,1]), 1)
       select_data <- train_data[select_idx,]
-      answer[1] <- train_result[select_idx] == " >50K"
-      answer[2] <- train_result[select_idx] == " <=50K"
+      number<-2*(train_result[select_idx] == " >50K") - 1 #1 for " >50K"; -1 for " <=50K"
       predict<-select_data * main_a
-      predict <- number[answer] * (sum(predict) + main_b)
+      predict <- number * (sum(predict) + main_b)
 
       predict <- predict >= 1
       if(predict){
@@ -72,8 +58,8 @@ for(i in 0:-3){
         delta_b <- 0
       }
       else{
-        delta_a <- lambda * main_a -  number[answer] * select_data
-        delta_b <- -number[answer]
+        delta_a <- lambda * main_a -  number * select_data
+        delta_b <- -number
       }
       main_a <- main_a - delta_a * step_len
       main_b <- main_b - delta_b * step_len
@@ -115,10 +101,16 @@ for(i in 0:-3){
 }#end of 10^i
 
 #---------------------start testing now--------------------------------
+#load test data
+test_data <- read.csv('adult.test', header = FALSE)
+test_result <- test_data[, 15]
+test_data<-test_data[, c(1, 3, 5, 11, 12, 13)]
+test_data<-scale(test_data)
+#testing
 test_predict<-t(t(test_data)*result_a)
 test_predict<-rowSums(test_predict) + result_b
 test_predict<-test_predict > 0
-test_answer <- test_result == " >50K"
+test_answer <- test_result == " >50K."
 accuracy <- test_predict == test_answer
 accuracy <- sum(accuracy)/length(accuracy)
 accuracy
