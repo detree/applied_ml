@@ -2,7 +2,7 @@
 
 2. For question, go to http://luthuli.cs.uiuc.edu/~daf/courses/LearningCourse/learning-book-21-jan-small.pdf. The question 2.5 is at the end  of chapter 2.
 
-3. For dataset, go to https://archive.ics.uci.edu/ml/machine-learning-databases/adult/. Copy the whole content of adult.data and adult.test into a txt file and save as data.txt. You need to remove the first line in adult.test and all the . at the end of each line in adult.test.
+3. For dataset, go to https://archive.ics.uci.edu/ml/machine-learning-databases/adult/. Copy the whole content of adult.data and adult.test into a txt file and save as data.txt. You need to remove the first line in adult.test and all the . at the end of each line in adult.test. Also, for our program, a manually separated test file is needed.
 
 4. All source files are in the patter hw2.R. 
 
