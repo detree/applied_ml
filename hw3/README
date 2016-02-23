@@ -1,0 +1,10 @@
+1. Download RStudio from https://www.rstudio.com/. Download R source code from https://cran.r-project.org/bin/macosx/. See detail on websites for installation.
+
+2. For question, go to http://luthuli.cs.uiuc.edu/~daf/courses/LearningCourse/Learning-HW-3.html. 
+
+3. For dataset, go to Kaggle.https://inclass.kaggle.com/c/cs498df-1. Since there are multiple data sets for this MP, you need to change the corresponding file name in the source code. Validation_data should be pubfig_kaggle_*.txt. Data.txt should be pubfig_train_50000_pairs.txt. pubfig_attr.txt should be from http://www.cs.columbia.edu/CAVE/databases/pubfig/download/pubfig_attributes.txt.
+
+4. All source files are in the patter hw3.R. 
+
+5 Change setwd to your working directory and run the code. The code should print the accuracy.
+
