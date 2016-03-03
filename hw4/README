@@ -1,0 +1,13 @@
+1. Download RStudio from https://www.rstudio.com/. Download R source code from https://cran.r-project.org/bin/macosx/. See detail on websites for installation.
+
+2. For question, go to http://luthuli.cs.uiuc.edu/~daf/courses/LearningCourse/Learning-HW-4.html. 
+
+3. For dataset, there are different data sets used.
+    3.4 is using https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data
+    3.5 is using wine.data under https://archive.ics.uci.edu/ml/datasets/Wine 
+    3.7 is using wdbc.data under http://archive.ics.uci.edu/ml/
+datasets/Breast+Cancer+Wisconsin+(Diagnostic)
+
+4. hw4_3_4_* is for the problem 3.4, q3_* is for the problem 3.5 and 3.7
+
+5 Change setwd to your working directory and run the code. Also, some file may have variable named data_file to change the data file being used in that script. Usually all of the code to print the plots are included, but they might be run separately to draw different plots
