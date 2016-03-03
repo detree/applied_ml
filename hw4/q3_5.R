@@ -17,13 +17,14 @@ eVal<-eigenv$values
 eVec<-eigenv$vectors
 #lambda<-t(eVec)%*%covmat%*%eVec
 #colnames(eVec)<-c("Alcohol", "Malic acid","Ash","Alcalinity of ash","Magnesium","Total phenols","Flavanoids","Nonflavanoid phenols","Proanthocyanins","Color intensity","Hue","OD280/OD315 of diluted wines","Proline")
-plot(eVec[,1], type="h",main="first princinple component", ylab="value")
-plot(eVec[,2], type="h",main="second princinple component", ylab="value")
-plot(eVec[,3], type="h",main="third princinple component", ylab="value")
+plot(eVec[,1], type="h",main="first principal component", ylab="value")
+plot(eVec[,2], type="h",main="second principal component", ylab="value")
+plot(eVec[,3], type="h",main="third principal component", ylab="value")
 #plot(eVal, xlab="index", ylab="eigenvalue", type="l")
 
 PCs<-prcomp(bigx,center=TRUE, scale.=FALSE)
 proj_of2 <-PCs$x[,c(1,2)]
+postscript("wine.eps")
 labels<-c('1','2','3')
 color<-c('red','green','blue','yellow','orange')
 pchr<-c(1, 2, 3)
@@ -32,3 +33,6 @@ parset<-with(ss,simpleTheme(pch = pchr[kinds],
                             col = color[kinds]))
 splom(proj_of2,groups=bigy, par.settings=parset, varnames=c('pc1','pc2'),
       key = list(text = list(labels), points = list(pch = pchr),columns=3))
+dev.off()
+
+
