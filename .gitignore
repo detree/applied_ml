@@ -1,4 +1,22 @@
+<<<<<<< HEAD
 
 hw1/.Rhistory
 
 *.pdf
+=======
+hw1
+hw2
+hw3
+hw4
+hw6
+hw7
+hw8
+hw9
+hw10
+hw11
+hw12
+*.swp
+*/.Rhistory
+*.pdf
+!hw5/*
+>>>>>>> 9e8a2c9f8fa6463417f00da1a3fbca50fc839b5c
