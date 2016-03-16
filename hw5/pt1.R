@@ -6,30 +6,48 @@ library(caret)
 #================================para====================================
 data_file <- "docword.nips.txt"
 clustern=30
+const_extra=1
 #================================para end================================
 rawd<-read.csv(data_file, sep=' ', header=FALSE)
 docn<-rawd[1,1]
 wordn<-rawd[2,1]
 NNZ<-rawd[3,1]
+#document i, word k, topic j
 xik=matrix(data=0, nrow=docn, ncol=wordn)
 for( i in 4:nrow(rawd) )
   xik[rawd[i,1], rawd[i,2]] = rawd[i,3]
+xk<-colSums(xik)
 delta=matrix(data=0, nrow = docn, ncol=clustern)
 
 #randomly generate the delta
 delta_init<-sample(1:clustern, docn, replace=TRUE)
 for( i in 1:docn)
   delta[i,delta_init[i]]=1
-#generate pjk, prob of word j in cluster k
+#generate pjk, prob of word k in cluster j
 eachword_cnt<-array(data=0, dim=wordn)
 eachword_cnt<-colSums(xik)
-doc_ink<-matrix(nrow=clustern)
-eachword_ink_cnt<-matrix(data=0, nrow=wordn, ncol=clustern)
+eachword_inj_cnt<-matrix(data=0, nrow=wordn, ncol=clustern)
 for( i in 1:docn ){
   tcluster<-which(delta[i,]==1)
-  for( j in 1:wordn ){
-    eachword_ink_cnt[j,k]+=xik[i, j]
+  for( k in 1:wordn ){
+    eachword_inj_cnt[k,tcluster] = eachword_inj_cnt[k,tcluster] + xik[i, k]
+  }
+}
+pjk<-matrix(data=0, nrow=clustern, ncol=wordn)
+for( j in 1:clustern ){
+  for( k in 1:wordn ){
+    pjk[j,k] = eachword_inj_cnt[k,j]/(const_extra+eachword_cnt[k])
+  }
+}
+#generate wij
+PIj<-array(data=0, dim=clustern)
+PIj<-colSums(delta)/docn
+wij<-matrix(data=1.0, nrow = docn, ncol = clustern)
+for( i in 1:docn ){
+  for( j in 1:clustern ){
+    wij[i,j]<-prod(pjk[j,]^xk)
   }
 }
 
-pjk<-matrix(data=0, nrow=clustern, rcol=wordn)
+
+
