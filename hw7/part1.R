@@ -14,25 +14,16 @@ namedata<- namedata_raw[,name_out_col]
 locdata<- locdata_raw[,loc_out_col]
 loc_filter<- which(locdata[,3]>=9999)
 locdata<- locdata[-loc_filter,]
-temperature_colnum<- 3
 avgtemp<-aggregate(locdata, list(SID=locdata[,1], Year=locdata[,2]), mean)
-temp2000<-matrix(nrow=nrow(namedata), ncol=temperature_colnum)
-temp2001<-matrix(nrow=nrow(namedata), ncol=temperature_colnum)
-temp2002<-matrix(nrow=nrow(namedata), ncol=temperature_colnum)
-temp2003<-matrix(nrow=nrow(namedata), ncol=temperature_colnum)
-temp2004<-matrix(nrow=nrow(namedata), ncol=temperature_colnum)
-for(i in 1:nrow(namedata)){
-  
-  tmpname<- namedata[which(namedata[,1]==i),]
-  tmploc<- locdata[which(locdata[,1]==i),]
-  year_filter<- which(tmploc[,2]==2000)
-  temp2000[i,]<- c( tmpname[,c('East_UTM', 'North_UTM')], mean(tmploc[year_filter,3]) )
-  year_filter<- which(tmploc[,2]==2001)
-  temp2001[i,]<- c( tmpname[,c('East_UTM', 'North_UTM')], mean(tmploc[year_filter,3]) )
-  year_filter<- which(tmploc[,2]==2002)
-  temp2002[i,]<- c( tmpname[,c('East_UTM', 'North_UTM')], mean(tmploc[year_filter,3]) )
-  year_filter<- which(tmploc[,2]==2003)
-  temp2003[i,]<- c( tmpname[,c('East_UTM', 'North_UTM')], mean(tmploc[year_filter,3]) )
-  year_filter<- which(tmploc[,2]==2004)
-  temp2004[i,]<- c( tmpname[,c('East_UTM', 'North_UTM')], mean(tmploc[year_filter,3]) )
+avgtemp<-avgtemp[,3:5]
+tempdata<-matrix(data=0, nrow=nrow(namedata), ncol=3)
+for(sid in 1:nrow(namedata)){
+  tmpname<- namedata[which(namedata[,1]==sid),]
+  tempdata[sid,c(1,2)]<- as.double(tmpname[1,c(2,3)])
+  tempdata[sid,3]<- mean(avgtemp[which(avgtemp[,1]==sid), 3])
 }
+distmat<- as.matrix( dist(tempdata[,c(1,2)]) )
+avgdist<- sum(distmat)/length(distmat)
+h<-seq(avgdist/2, avgdist*2, length.out = 6)
+
+basepnt<- 
