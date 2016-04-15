@@ -1,0 +1,7 @@
+1. Download RStudio from https://www.rstudio.com/. Download R source code from https://cran.r-project.org/bin/macosx/. See detail on websites for installation.
+
+2. For question, go to http://luthuli.cs.uiuc.edu/~daf/courses/LearningCourse/Learning-HW-7.html
+
+3. For data set of question 1 go to course website.
+4. Change setwd to your working directory and run the code. Don’t forget to change the file name and image name.
+

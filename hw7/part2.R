@@ -2,6 +2,7 @@ rm(list=ls())
 workdir <- "~/Desktop/applied_ml/hw7"
 setwd(workdir)
 library(glmnet)
+library(MASS)
 #================================para====================================
 namefile<- "Locations.txt"
 locfile<- "Oregon_Met_Data.txt"
@@ -42,6 +43,7 @@ train_data_scale = 1/sqrt(2*pi)*exp((-1)*train_data_scale^2)
 #model = glmnet(train_data_scale, tempdata[,3], alpha = 1, lambda = 0)
 
 lasso = cv.glmnet(as.matrix(train_data_scale), tempdata[,3], alpha = 1)
+plot(lasso)
 new_lambda = lasso$lambda.min
 
 min_east = min(tempdata[,1])
@@ -84,5 +86,6 @@ for(i in 1: 100){
 
 totdist<-sum(dist(zmat))/10000
 totdist
-filled.contour(new_east, new_north, zmat,color = terrain.colors, levels = pretty(zlim, nlevels),xlab = "East",ylab = "North")
+contour(new_east, new_north, zmat, color = terrain.colors, axes = TRUE,
+               xlab ="East",ylab = "North")
 

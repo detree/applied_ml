@@ -77,5 +77,5 @@ for(i in 1: 100){
 }
 totdist<-sum(dist(zmat))/10000
 totdist
-filled.contour(new_east, new_north, zmat,color = terrain.colors, xlab = "East",ylab = "North")
+contour(new_east, new_north, zmat,color = terrain.colors, xlab = "East",ylab = "North")
 
