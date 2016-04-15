@@ -5,7 +5,6 @@ library(glmnet)
 #================================para====================================
 namefile<- "Locations.txt"
 locfile<- "Oregon_Met_Data.txt"
-scale_index<-3
 #================================para end================================
 namedata_raw<- read.csv(namefile, sep=' ', header=TRUE)
 locdata_raw<- read.csv(locfile, sep=' ', header=TRUE)
@@ -36,10 +35,15 @@ for(i in 1 : nrow(train_data)){
     train_data[i,j] <- sqrt((basepnt[i,1] - basepnt[j,1])^2 + (basepnt[i,2] - basepnt[j,2])^2)
   }
 }
-train_data_scale <- train_data/h[scale_index]
+train_data_scale <- train_data/h[3]
 train_data_scale = 1/sqrt(2*pi)*exp((-1)*train_data_scale^2)
 
-model = glmnet(train_data_scale, tempdata[,3], alpha = 1, lambda = 0)
+
+elastic_net = cv.glmnet(as.matrix(train_data_scale), tempdata[,3], alpha = 0.1)
+plot(elastic_net)
+
+new_lambda = elastic_net$lambda.min
+
 
 min_east = min(tempdata[,1])
 max_east = max(tempdata[,1])
@@ -64,9 +68,11 @@ for (i in 1:10000){
     new_train_x[i,j] = sqrt(tmp1^2+tmp2^2)
   }
 }
-new_train_x = new_train_x/h[scale_index]
+new_train_x = new_train_x/h[3]
 new_train_x = 1/sqrt(2*pi)*exp((-1)*new_train_x^2)
-perd_rsl <- predict(model, new_train_x)
+perd_rsl <- predict(elastic_net, new_train_x , s = new_lambda)
+
+
 zmat = matrix(0 , nrow=100, ncol=100)
 ptr=1
 for(i in 1: 100){ 
@@ -75,7 +81,5 @@ for(i in 1: 100){
     ptr <- ptr+1
   }
 }
-totdist<-sum(dist(zmat))/10000
-totdist
 filled.contour(new_east, new_north, zmat,color = terrain.colors, xlab = "East",ylab = "North")
 

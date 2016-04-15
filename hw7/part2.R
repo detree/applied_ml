@@ -5,7 +5,7 @@ library(glmnet)
 #================================para====================================
 namefile<- "Locations.txt"
 locfile<- "Oregon_Met_Data.txt"
-scale_index<-3
+scale_index <- 1
 #================================para end================================
 namedata_raw<- read.csv(namefile, sep=' ', header=TRUE)
 locdata_raw<- read.csv(locfile, sep=' ', header=TRUE)
@@ -39,7 +39,10 @@ for(i in 1 : nrow(train_data)){
 train_data_scale <- train_data/h[scale_index]
 train_data_scale = 1/sqrt(2*pi)*exp((-1)*train_data_scale^2)
 
-model = glmnet(train_data_scale, tempdata[,3], alpha = 1, lambda = 0)
+#model = glmnet(train_data_scale, tempdata[,3], alpha = 1, lambda = 0)
+
+lasso = cv.glmnet(as.matrix(train_data_scale), tempdata[,3], alpha = 1)
+new_lambda = lasso$lambda.min
 
 min_east = min(tempdata[,1])
 max_east = max(tempdata[,1])
@@ -66,7 +69,10 @@ for (i in 1:10000){
 }
 new_train_x = new_train_x/h[scale_index]
 new_train_x = 1/sqrt(2*pi)*exp((-1)*new_train_x^2)
-perd_rsl <- predict(model, new_train_x)
+#perd_rsl <- predict(model, new_train_x)
+perd_rsl <- predict(lasso, new_train_x , s = new_lambda)
+
+
 zmat = matrix(0 , nrow=100, ncol=100)
 ptr=1
 for(i in 1: 100){ 
@@ -75,7 +81,8 @@ for(i in 1: 100){
     ptr <- ptr+1
   }
 }
+
 totdist<-sum(dist(zmat))/10000
 totdist
-filled.contour(new_east, new_north, zmat,color = terrain.colors, xlab = "East",ylab = "North")
+filled.contour(new_east, new_north, zmat,color = terrain.colors, levels = pretty(zlim, nlevels),xlab = "East",ylab = "North")
 
