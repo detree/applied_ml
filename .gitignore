@@ -15,3 +15,7 @@ video
 */.Rhistory
 */.DS_Store
 *.pdf
+
+*.gz
+
+*.local
