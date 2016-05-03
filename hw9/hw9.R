@@ -22,13 +22,13 @@ for(i in 1:length(bigy)){
     bigy[i]=0
   }
 }
-    
+
 #for the AOC plot
 lmout<-cv.glmnet(bigx, as.numeric(bigy), family="binomial", alpha = 1, type.measure="auc", nfolds = 5)
 plot(lmout)
 #get average AOC.
 summary(lmout$cvm)
-lmout2$nzero[which(lmout$cvm==max(lmout$cvm))]
+lmout$nzero[which(lmout$cvm==max(lmout$cvm))]
 test <- predict(lmout,type="response", newx = bigx, s = 'lambda.min')
 
 #code for plot the ROC plot
@@ -52,5 +52,5 @@ plot(x=roc, type='l', xlab='true positive rate', ylab='false positive rate')
 lmout2<-cv.glmnet(bigx, as.numeric(bigy), family="binomial", alpha = 1, type.measure="deviance", nfolds = 5)
 summary(lmout2$cvm)
 lmout2$lambda.min
-lmout2$nzero[which(lmout2$lambda==lmout2$lambda.min)]
+lmout2$nzero[which(lmout2$cvm==max(lmout2$cvm))]
 plot(lmout2)
