@@ -39,7 +39,7 @@ import tarfile
 from six.moves import urllib
 import tensorflow as tf
 
-from tensorflow.models.image.cifar10 import cifar10_input
+import cifar10_input
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -154,6 +154,7 @@ def inputs(eval_data):
 
 
 def inference(images):
+  print('in inference')
   """Build the CIFAR-10 model.
   Args:
     images: Images returned from distorted_inputs() or inputs().
@@ -176,23 +177,24 @@ def inference(images):
     _activation_summary(conv1)
 
   epsilon=1e-3
+  keep_prob = 0.5
   # pool1
   pool1 = tf.nn.max_pool(conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                          padding='SAME', name='pool1')
   # bartch norm1
   norm1_mean, norm1_var = tf.nn.moments(pool1, [0,1,2], name='moments')
-  norm1_scale = tf.Variable(tf.ones([64])
-  norm1_beta = tf.Variable(tf.zeros([64])
+  norm1_scale = tf.Variable(tf.ones([64]))
+  norm1_beta = tf.Variable(tf.zeros([64]))
   norm1 = tf.nn.batch_normalization(pool1, norm1_mean, norm1_var, 
                                     norm1_scale, norm1_beta, epsilon, name='norm1')
 
   # conv2===================================
-  layern2 = 128
+  unitn2 = 128
   with tf.variable_scope('conv2') as scope:
-    kernel = _variable_with_weight_decay('weights', shape=[5, 5, 64, layern2],
+    kernel = _variable_with_weight_decay('weights', shape=[5, 5, 64, unitn2],
                                          stddev=1e-4, wd=0.0)
     conv = tf.nn.conv2d(norm1, kernel, [1, 1, 1, 1], padding='SAME')
-    biases = _variable_on_cpu('biases', [layern2], tf.constant_initializer(0.1))
+    biases = _variable_on_cpu('biases', [unitn2], tf.constant_initializer(0.1))
     bias = tf.nn.bias_add(conv, biases)
     conv2 = tf.nn.relu(bias, name=scope.name)
     _activation_summary(conv2)
@@ -202,14 +204,14 @@ def inference(images):
                          strides=[1, 2, 2, 1], padding='SAME', name='pool2')
   # bartch norm2
   norm2_mean, norm2_var = tf.nn.moments(pool2, [0,1,2], name='moments')
-  norm2_scale = tf.Variable(tf.ones([layern2])
-  norm2_beta = tf.Variable(tf.zeros([layern2])
+  norm2_scale = tf.Variable(tf.ones([unitn2]))
+  norm2_beta = tf.Variable(tf.zeros([unitn2]))
   norm2 = tf.nn.batch_normalization(pool2, norm2_mean, norm2_var, 
                                     norm2_scale, norm2_beta, epsilon, name='norm2')
 
   # conv3===================================
   with tf.variable_scope('conv3') as scope:
-    kernel = _variable_with_weight_decay('weights', shape=[5, 5, layern2, 64],
+    kernel = _variable_with_weight_decay('weights', shape=[5, 5, unitn2, 64],
                                          stddev=1e-4, wd=0.0)
     conv = tf.nn.conv2d(norm2, kernel, [1, 1, 1, 1], padding='SAME')
     biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.1))
@@ -222,8 +224,8 @@ def inference(images):
           #               strides=[1, 1, 1, 1], padding='SAME', name='pool3')
   # bartch norm3
   norm3_mean, norm3_var = tf.nn.moments(pool3, [0,1,2], name='moments')
-  norm3_scale = tf.Variable(tf.ones([64])
-  norm3_beta = tf.Variable(tf.zeros([64])
+  norm3_scale = tf.Variable(tf.ones([64]))
+  norm3_beta = tf.Variable(tf.zeros([64]))
   norm3 = tf.nn.batch_normalization(pool3, norm3_mean, norm3_var, 
                                     norm3_scale, norm3_beta, epsilon, name='norm3')
 
@@ -235,7 +237,8 @@ def inference(images):
     weights = _variable_with_weight_decay('weights', shape=[dim, 384],
                                           stddev=0.04, wd=0.004)
     biases = _variable_on_cpu('biases', [384], tf.constant_initializer(0.1))
-    local3 = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope.name)
+    local3_full = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope.name)
+    local3 = tf.nn.dropout(local3_full, keep_prob)
     _activation_summary(local3)
 
   # local4
@@ -252,7 +255,7 @@ def inference(images):
                                           stddev=1/192.0, wd=0.0)
     biases = _variable_on_cpu('biases', [NUM_CLASSES],
                               tf.constant_initializer(0.0))
-    softmax_linear = tf.softmax(tf.matmul(local4, weights) + biases, name=scope.name)
+    softmax_linear = tf.nn.softmax(tf.matmul(local4, weights) + biases, name=scope.name)
     _activation_summary(softmax_linear)
 
   return softmax_linear
