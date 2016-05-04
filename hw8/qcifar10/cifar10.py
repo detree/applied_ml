@@ -40,7 +40,7 @@ from six.moves import urllib
 import tensorflow as tf
 
 import cifar10_input
-import bnorm_helper
+from bnorm_helper import ConvolutionalBatchNormalizer
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -189,8 +189,10 @@ def inference(images):
                                     norm1_scale, norm1_beta, epsilon, name='norm1')
   """
 
-  norm1 = tf.nn.lrn(pool1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
-                    name='norm1')
+  #norm1 = tf.nn.lrn(pool1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
+  #                  name='norm1')
+  bnorm1 = ConvolutionalBatchNormalizer(64, epsilon, tf.train.ExponentialMovingAverage(decay=0.99), True)
+  norm1 = bnorm1.normalize(x=pool1)
 
   # conv2===================================
   unitn2 = 128
