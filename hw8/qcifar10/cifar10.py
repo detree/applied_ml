@@ -169,7 +169,7 @@ def inference(images):
   # conv1===================================
   with tf.variable_scope('conv1') as scope:
     kernel = _variable_with_weight_decay('weights', shape=[5, 5, 3, 64],
-                                         stddev=1e-4, wd=0.0)
+                                         stddev=0.1, wd=0.0)
     conv = tf.nn.conv2d(images, kernel, [1, 1, 1, 1], padding='SAME')
     biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.0))
     bias = tf.nn.bias_add(conv, biases)
@@ -193,10 +193,10 @@ def inference(images):
                     name='norm1')
 
   # conv2===================================
-  unitn2 = 128
+  unitn2 = 64 
   with tf.variable_scope('conv2') as scope:
     kernel = _variable_with_weight_decay('weights', shape=[5, 5, 64, unitn2],
-                                         stddev=1e-4, wd=0.0)
+                                         stddev=0.1, wd=0.0)
     conv = tf.nn.conv2d(norm1, kernel, [1, 1, 1, 1], padding='SAME')
     biases = _variable_on_cpu('biases', [unitn2], tf.constant_initializer(0.1))
     bias = tf.nn.bias_add(conv, biases)
@@ -213,13 +213,13 @@ def inference(images):
   norm2 = tf.nn.batch_normalization(pool2, norm2_mean, norm2_var, 
                                     norm2_scale, norm2_beta, epsilon, name='norm2')
   """
-  norm2 = tf.nn.lrn(pool2, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
+  norm2 = tf.nn.lrn(conv2, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
                     name='norm2')
 
   # conv3===================================
   with tf.variable_scope('conv3') as scope:
     kernel = _variable_with_weight_decay('weights', shape=[5, 5, unitn2, 64],
-                                         stddev=1e-4, wd=0.0)
+                                         stddev=0.1, wd=0.0)
     conv = tf.nn.conv2d(norm2, kernel, [1, 1, 1, 1], padding='SAME')
     biases = _variable_on_cpu('biases', [64], tf.constant_initializer(0.1))
     bias = tf.nn.bias_add(conv, biases)
@@ -227,8 +227,8 @@ def inference(images):
     _activation_summary(conv3)
 
   # pool3
-  pool3 = conv3#tf.nn.max_pool(conv3, ksize=[1, 3, 3, 1],
-          #               strides=[1, 1, 1, 1], padding='SAME', name='pool3')
+  pool3 = tf.nn.max_pool(conv3, ksize=[1, 3, 3, 1],
+                         strides=[1, 1, 1, 1], padding='SAME', name='pool3')
   """ bartch norm3
   norm3_mean, norm3_var = tf.nn.moments(pool3, [0,1,2], name='moments')
   norm3_scale = tf.Variable(tf.ones([64]))
@@ -262,7 +262,7 @@ def inference(images):
   # softmax, i.e. softmax(WX + b)
   with tf.variable_scope('softmax_linear') as scope:
     weights = _variable_with_weight_decay('weights', [192, NUM_CLASSES],
-                                          stddev=1/192.0, wd=0.0)
+                                          stddev=1/10.0, wd=0.0)
     biases = _variable_on_cpu('biases', [NUM_CLASSES],
                               tf.constant_initializer(0.0))
     softmax_linear = tf.nn.softmax(tf.matmul(local4, weights) + biases, name=scope.name)
