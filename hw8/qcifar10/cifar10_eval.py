@@ -37,7 +37,7 @@ import time
 import numpy as np
 import tensorflow as tf
 
-from tensorflow.models.image.cifar10 import cifar10
+import cifar10
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -127,6 +127,8 @@ def evaluate():
         cifar10.MOVING_AVERAGE_DECAY)
     variables_to_restore = variable_averages.variables_to_restore()
     saver = tf.train.Saver(variables_to_restore)
+    #saver = tf.train.Saver([v for v in variables_to_restore
+    #                    if v != "input_producer/limit_epochs/epochs"])
 
     # Build the summary operation based on the TF collection of Summaries.
     summary_op = tf.merge_all_summaries()
@@ -150,3 +152,4 @@ def main(argv=None):  # pylint: disable=unused-argument
 
 if __name__ == '__main__':
   tf.app.run()
+    #saver = tf.train.Saver([v for v in variables_to_restore

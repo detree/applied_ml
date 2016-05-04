@@ -40,6 +40,7 @@ from six.moves import urllib
 import tensorflow as tf
 
 import cifar10_input
+import bnorm_helper
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -68,7 +69,6 @@ INITIAL_LEARNING_RATE = 0.1       # Initial learning rate.
 TOWER_NAME = 'tower'
 
 DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz'
-
 
 def _activation_summary(x):
   """Helper to create summaries for activations.
@@ -181,12 +181,16 @@ def inference(images):
   # pool1
   pool1 = tf.nn.max_pool(conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
                          padding='SAME', name='pool1')
-  # bartch norm1
+  """ bartch norm1
   norm1_mean, norm1_var = tf.nn.moments(pool1, [0,1,2], name='moments')
   norm1_scale = tf.Variable(tf.ones([64]))
   norm1_beta = tf.Variable(tf.zeros([64]))
   norm1 = tf.nn.batch_normalization(pool1, norm1_mean, norm1_var, 
                                     norm1_scale, norm1_beta, epsilon, name='norm1')
+  """
+
+  norm1 = tf.nn.lrn(pool1, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
+                    name='norm1')
 
   # conv2===================================
   unitn2 = 128
@@ -202,12 +206,15 @@ def inference(images):
   # pool2
   pool2 = tf.nn.max_pool(conv2, ksize=[1, 3, 3, 1],
                          strides=[1, 2, 2, 1], padding='SAME', name='pool2')
-  # bartch norm2
+  """ bartch norm2
   norm2_mean, norm2_var = tf.nn.moments(pool2, [0,1,2], name='moments')
   norm2_scale = tf.Variable(tf.ones([unitn2]))
   norm2_beta = tf.Variable(tf.zeros([unitn2]))
   norm2 = tf.nn.batch_normalization(pool2, norm2_mean, norm2_var, 
                                     norm2_scale, norm2_beta, epsilon, name='norm2')
+  """
+  norm2 = tf.nn.lrn(pool2, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
+                    name='norm2')
 
   # conv3===================================
   with tf.variable_scope('conv3') as scope:
@@ -222,13 +229,16 @@ def inference(images):
   # pool3
   pool3 = conv3#tf.nn.max_pool(conv3, ksize=[1, 3, 3, 1],
           #               strides=[1, 1, 1, 1], padding='SAME', name='pool3')
-  # bartch norm3
+  """ bartch norm3
   norm3_mean, norm3_var = tf.nn.moments(pool3, [0,1,2], name='moments')
   norm3_scale = tf.Variable(tf.ones([64]))
   norm3_beta = tf.Variable(tf.zeros([64]))
   norm3 = tf.nn.batch_normalization(pool3, norm3_mean, norm3_var, 
                                     norm3_scale, norm3_beta, epsilon, name='norm3')
-
+  """
+  norm3 = tf.nn.lrn(pool3, 4, bias=1.0, alpha=0.001 / 9.0, beta=0.75,
+                    name='norm3')
+  
   # local3===================================
   with tf.variable_scope('local3') as scope:
     # Move everything into depth so we can perform a single matrix multiply.
