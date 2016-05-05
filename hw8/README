@@ -1,0 +1,8 @@
+1. Download RStudio from https://www.rstudio.com/. Download R source code from https://cran.r-project.org/bin/macosx/. See detail on websites for installation.
+
+2. For question, go to http://luthuli.cs.uiuc.edu/~daf/courses/LearningCourse/Learning-HW-8-takehome.html
+
+3. All the graphs are attached in the pdf report. 
+
+4. Code for part 1 and 2 are in folder part1/2.  Code for part 3 and 4 are in folder part3/4. There is no need to change anything in the file. Just open the file and run the code. Don’t forget to run tensor flow.
+
